@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Profile</title>
+</head>
+<body>
+
+<h1>My Profile</h1>
+
+<a th:href="@{/dashboard}">Back to Dashboard</a> |
+<a th:href="@{/my-courses}">My Courses</a> |
+<form th:action="@{/logout}" method="post" style="display:inline;">
+    <button type="submit">Logout</button>
+</form>
+
+<hr>
+
+<h2 th:text="'Username: ' + ${username}"></h2>
+
+<p><b>Total Enrolled:</b> <span th:text="${totalEnrolled}"></span></p>
+<p><b>Total Completed:</b> <span th:text="${totalCompleted}"></span></p>
+<p><b>Progress:</b> <span th:text="${progressPercent}"></span>%</p>
+
+<hr>
+
+<h2>My Enrollments</h2>
+
+<div th:if="${#lists.isEmpty(enrollments)}">
+    <p>No enrollments yet.</p>
+</div>
+
+<div th:each="e : ${enrollments}">
+    <h3 th:text="${e.course.name}"></h3>
+    <p th:text="${e.course.description}"></p>
+    <p>Status: <b th:text="${e.status}"></b></p>
+
+    <div th:if="${e.status.name() == 'COMPLETED'}">
+        <p style="color:green;"><b>✅ Completed</b></p>
+
+        <a th:href="@{'/certificate/' + ${e.id}}">
+            <button type="button">Download Certificate</button>
+        </a>
+    </div>
+
+    <hr>
+</div>
+
+</body>
+</html>

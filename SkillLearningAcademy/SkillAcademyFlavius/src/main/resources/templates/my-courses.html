@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Courses</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body style="font-family: Arial, sans-serif; margin: 20px;">
+
+<header style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
+    <h1 style="margin:0;">My Courses</h1>
+
+    <nav style="display:flex; gap:10px; align-items:center;">
+        <a th:href="@{/dashboard}">← Back to Dashboard</a>
+
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit">Logout</button>
+        </form>
+    </nav>
+</header>
+
+<hr>
+<div th:if="${#lists.isEmpty(enrollments)}" style="padding: 12px 0;">
+    <p style="margin:0;">You have not enrolled in any courses yet.</p>
+</div>
+
+<div th:each="enrollment : ${enrollments}"
+     style="border:1px solid #ddd; padding:16px; border-radius:10px; margin: 14px 0;">
+
+    <h2 style="margin:0 0 6px 0;" th:text="${enrollment.course.name}">Course Name</h2>
+    <p style="margin:0 0 10px 0;" th:text="${enrollment.course.description}">Description</p>
+
+    <p style="margin:0 0 12px 0;">
+        Price: ₹<b th:text="${enrollment.course.price}">0</b>
+    </p>
+
+    <p style="margin:0 0 6px 0;">
+        Status:
+        <b th:text="${enrollment.status}">IN_PROGRESS</b>
+    </p>
+
+    <p style="margin:0 0 10px 0;">
+        Progress:
+        <b><span th:text="${enrollment.progressPercent}">0</span>%</b>
+    </p>
+
+    <div style="width: 360px; max-width: 100%; height: 16px; border: 1px solid #333; border-radius: 8px; overflow: hidden;">
+        <div th:style="'height:16px; width:' + ${enrollment.progressPercent} + '%; background:#2e7d32;'"></div>
+    </div>
+
+    <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+
+        <form th:if="${enrollment.progressPercent != null and enrollment.progressPercent < 100}"
+              th:action="@{/update-progress}" method="post"
+              style="display:flex; gap:8px; align-items:center;">
+
+            <input type="hidden" name="enrollmentId" th:value="${enrollment.id}" />
+
+            <label for="p" style="font-size: 14px;">Update %:</label>
+            <input id="p" type="number" name="progressPercent"
+                   min="0" max="100"
+                   th:value="${enrollment.progressPercent}"
+                   required style="width:80px;" />
+
+            <button type="submit">Save</button>
+        </form>
+
+        <div th:if="${enrollment.progressPercent != null and enrollment.progressPercent == 100}">
+            Completed Date:
+            <b th:text="${enrollment.completedDate}">YYYY-MM-DD</b>
+        </div>
+
+        <div th:if="${enrollment.progressPercent != null and enrollment.progressPercent == 100}">
+            <a th:href="@{'/certificate/' + ${enrollment.id}}">
+                <button type="button">Download Certificate</button>
+            </a>
+        </div>
+    </div>
+
+    <hr style="margin:14px 0;">
+
+    <form th:action="@{/remove-enrollment}" method="post"
+          onsubmit="return confirm('Are you sure you want to remove this course?')"
+          style="margin:0;">
+        <input type="hidden" name="enrollmentId" th:value="${enrollment.id}" />
+        <button type="submit" style="color:#b00020;">Remove Course</button>
+    </form>
+
+</div>
+
+</body>
+</html>

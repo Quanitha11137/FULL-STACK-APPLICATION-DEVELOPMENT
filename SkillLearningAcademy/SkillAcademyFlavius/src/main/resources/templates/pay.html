@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Payment</title>
+</head>
+<body>
+
+<h2>Payment Page (Demo)</h2>
+
+<p>
+  Course: <b th:text="${enrollment.course.name}"></b>
+</p>
+<p>
+  Amount: ₹<span th:text="${enrollment.course.price}"></span>
+</p>
+
+<hr>
+
+<form th:action="@{/pay-success}" method="post">
+  <input type="hidden" name="enrollmentId" th:value="${enrollment.id}" />
+  <button type="submit">✅ Pay Now (Demo)</button>
+</form>
+
+<br>
+<a th:href="@{/my-courses}">Back</a>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<div class="page">
+    <div class="container">
+
+        <div class="topbar">
+            <div class="title">
+                <h1>
+                    Welcome, <span th:text="${username}">User</span> 👋
+                    <span th:if="${isAdmin}" class="badge">ADMIN</span>
+                </h1>
+            </div>
+
+            <div class="actions">
+                <a class="link" th:href="@{/my-courses}">My Courses</a>
+                <a class="link" th:href="@{/profile}">My Profile</a>
+
+                <span sec:authorize="hasRole('ADMIN')">
+                    <a class="link" th:href="@{/admin}">Admin Dashboard</a>
+                </span>
+
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <button class="btn btn-outline" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+
+        <h2 class="section-title">Available Courses</h2>
+
+        <div th:if="${#lists.isEmpty(courses)}" class="card">
+            <p>No courses available.</p>
+        </div>
+
+        <div th:each="course : ${courses}" class="card">
+
+            <!-- ✅ course image -->
+            <img th:if="${course.imageUrl != null and !#strings.isEmpty(course.imageUrl)}"
+                 th:src="@{${course.imageUrl}}"
+                 alt="Course Image"
+                 style="width:300px; height:180px; object-fit:cover; border-radius:8px; display:block; margin-bottom:15px;" />
+
+            <h3 class="course-title" th:text="${course.name}"></h3>
+            <p class="course-desc" th:text="${course.description}"></p>
+            <p class="course-price">
+                Price: ₹<span th:text="${course.price}"></span>
+            </p>
+
+            <div th:if="${enrolledCourseIds.contains(course.id)}">
+                <span class="enrolled">✅ Already Enrolled</span>
+            </div>
+
+            <div th:unless="${enrolledCourseIds.contains(course.id)}">
+                <form th:action="@{/enroll}" method="post"
+                      onsubmit="this.querySelector('button').disabled=true;">
+                    <input type="hidden" name="courseId" th:value="${course.id}" />
+                    <button class="btn btn-primary" type="submit">Enroll</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
